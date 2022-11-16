@@ -7,6 +7,7 @@
 // 배열에서 i+j는 대각선에 있는 요소임을 알수 있다 , (i+j)
 // 문제에서는 행이 아닌 열 의 대각선 요소를 먼저 출력해야되므로 reverse를해주었다.
 
+
  var findDiagonalOrder = function(nums) {
   let answer=[]
   let list=Array.from(Array(10001),()=>[])
