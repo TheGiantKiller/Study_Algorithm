@@ -15,19 +15,23 @@
       while(true){
         let top=stack[stack.length-1]
         let asteorid=asteroids[i]
+        // 충돌이 가능할수있는 상황
         if(top>0 && asteorid<0){
+          // 두개다 충돌이 가능하므로 반복문탈출
           if(Math.abs(top)===Math.abs(asteorid)){
             stack.pop()
             break
           }
-          // 소행성이 더크면 
+          // 현재 소행성이 더크면 원래있던거 없애버림
           else if(Math.abs(top)<Math.abs(asteorid)){
             stack.pop()
           }
+          // 들어오는소행성이 작으니까 push시킬 필요가없음
           else{
             break
           }
         }
+        // 충돌이 불가능하니까 그냥 넣어버림
         else {
           stack.push(asteorid)
           break
