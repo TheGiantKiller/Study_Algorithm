@@ -2,6 +2,8 @@
  * @param {string} s
  * @return {string}
  */
+
+//  스택에 남는 괄호는 올바르지 않은 쌍을 가지므로 남는 괄호에 대한 index만 제외하고 정답을 추가시킴
  var minRemoveToMakeValid = function(s) {
     let stack=[]
   
