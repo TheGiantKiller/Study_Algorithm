@@ -2,6 +2,8 @@
  * @param {number[]} nums
  * @return {number}
  */
+
+// dp [i] = 현재 위치까지 최소 이동 점프횟수
 var jump = function(nums) {
     let dp=new Array(nums.length).fill(9999)
     dp[0]=0
