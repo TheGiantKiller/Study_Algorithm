@@ -1,6 +1,7 @@
 
-// 판매하고 싶은 귤 k개를 최소가 되는 tangerine조합의 개수를 구하면됨
-// 중복 된 개수가 많은 귤을 우선순위로 두면될거같음
+// 판매하고 싶은 귤 k개의 귤을 만족시키는 최소의 과일 조합
+
+// 중복 된 개수가 많은 귤을 제거해주면됨
 
 function solution(k, tangerine) {
   var answer = 0;
@@ -25,7 +26,6 @@ function solution(k, tangerine) {
       break
     }
   }
-  console.log(answer)
   return answer;
 }
 
