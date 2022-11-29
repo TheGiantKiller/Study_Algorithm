@@ -20,7 +20,7 @@ function solution(order) {
     // 컨테이너 벨트의 맨앞의 놓인 상자가 현재 트럭에 실어야하는순서가아니면 
     stack.push(conveyerBelt[i])
 } 
-  // 예외
+  // 예외 처리
   while(stack.length>0 && stack[stack.length-1]===order[idx]){
     stack.pop()
     idx+=1
