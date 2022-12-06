@@ -1,56 +1,48 @@
+// id에 대한 신고 당한 횟수 기록
+// k번 신고당하면 정지당함
+// 정지당한 아이디는 신고한 유저에게 메일로 전송
+
+// 다시품
+
 function solution(id_list, report, k) {
-    let answer = [];
-    let users=[]
-    let singoUsers=[]
+  let answer = [];
+  let users = new Map(); // 신고한 유저 목록저장
+  let singo_list = new Map(); //신고당한 횟수
+  let block_user = []; // 블록당한 유저가 저장됨
+  id_list.forEach((id) => {
+    users.set(id, []);
+    singo_list.set(id, 0);
+  });
 
-
-    // 1. report muzi frodo = muzi가 frode를 신고 함 , (muzi = key value= 신고한사람 저장) => set으로 저장 중복신고 불가능 
-    for(let i=0;i<id_list.length;i++){
-        users[id_list[i]]=new Set()
-        singoUsers[id_list[i]]=0
+  report.forEach((user) => {
+    const [id, target] = user.split(" ");
+    const user_list = users.get(id);
+    // 유저에는 target이 한번만 저장되어야함 중복신고불가능 처리
+    if (!user_list.includes(target)) {
+      user_list.push(target);
+      singo_list.set(target, singo_list.get(target) + 1);
+      users.set(id, [...user_list]);
     }
-
-    // 2. 해당유저가 신고한사람을 넣음 (중복신고 x)
-    for(let i=0;i<report.length;i++){
-        const tmp=report[i].split(' ')
-        users[tmp[0]].add(tmp[1]) 
+  });
+  [...singo_list].forEach((e) => {
+    const [user, cnt] = e;
+    if (cnt >= k) {
+      block_user.push(user);
     }
-    
-    
-    // 3. 신고 당한사람 카운팅
+  });
+  id_list.forEach((id) => {
+    let cnt = 0;
+    const targets = users.get(id);
+    targets.forEach((user) => {
+      if (block_user.includes(user)) {
+        cnt += 1;
+      }
+    });
+    answer.push(cnt);
+  });
 
-    for(const key in users){
-        for(const value of users[key].keys()){
-            singoUsers[value]+=1
-        }
-    }
-
-    // 4. 정지된 아이디인지 확인하고 정지된아이디면 정답에 넣음 
-    for(const key in users){
-        let cnt=0
-        for(const value of users[key].keys()){
-            if(singoUsers[value]>=k){
-                cnt+=1
-            }
-        }
-        answer.push(cnt)
-    }
-    
-
-
-
-
-
-
-
-
-    return answer;
-
-
+  return answer;
 }
-// 해당 id_list의 유저가 정지시킨 유저의 수 반환 
 
-
-
-//solution(["muzi", "frodo", "apeach", "neo"],["muzi frodo","apeach frodo","frodo neo","muzi neo","apeach muzi"],2)
-//solution(["con", "ryan"],["ryan con", "ryan con", "ryan con", "ryan con"],3)
+// solution(["muzi", "frodo", "apeach", "neo"], ["muzi frodo", "apeach frodo", "frodo neo", "muzi neo", "apeach muzi"], 2);
+solution(["con", "ryan"], ["ryan con", "ryan con", "ryan con", "ryan con"], 3);
