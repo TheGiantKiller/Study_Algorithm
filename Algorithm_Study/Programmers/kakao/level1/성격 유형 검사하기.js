@@ -1,3 +1,4 @@
+//다시품
 const calculate_score = (survey, choices, scores) => {
   let new_survey = survey.split("");
   let [a_score, b_score] = [0, 0];

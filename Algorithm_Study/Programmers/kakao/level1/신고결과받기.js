@@ -24,12 +24,14 @@ function solution(id_list, report, k) {
       users.set(id, [...user_list]);
     }
   });
+  // 블록 시킬유저저장
   [...singo_list].forEach((e) => {
     const [user, cnt] = e;
     if (cnt >= k) {
       block_user.push(user);
     }
   });
+//   정답찾기
   id_list.forEach((id) => {
     let cnt = 0;
     const targets = users.get(id);
