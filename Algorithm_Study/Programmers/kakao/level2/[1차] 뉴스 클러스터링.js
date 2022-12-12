@@ -1,94 +1,116 @@
-const isAlpha = (alpha) => {
-    if (alpha >= 'A' && alpha <= 'Z') {
-        return true
+// 다시풀어바야할듯.. 문제를 잘이해고 풀자
+
+// string에대해 카운팅함
+const get_count = (map, str) => {
+  for (let i = 0; i < str.length; i++) {
+    let s = str[i];
+    if (!map.has(s)) {
+      map.set(s, 1);
+    } else {
+      map.set(s, map.get(s) + 1);
     }
-    return false
-}
-const divide = (s) => {
-    const tmp=[]
-    for (let i = 0; i < s.length-1; i++){
-        let a = s[i].toUpperCase()
-        let b= s[i+1].toUpperCase()
-        if (isAlpha(a) && isAlpha(b)) {
-           tmp.push(a+b)
-        }
+  }
+};
+
+// 문자열 처리
+const make_string = (str, list) => {
+  let new_string = str.toUpperCase();
+  for (let i = 0; i < new_string.length - 1; i++) {
+    let a = new_string.charCodeAt(i);
+    let b = new_string.charCodeAt(i + 1);
+
+    if (a >= 65 && a <= 90 && b >= 65 && b <= 90) {
+      list.push(new_string[i] + new_string[i + 1]);
     }
-    return tmp
-}
-function MultiUnionSet(set1, set2) {
-    let m_set=[]
-    if (set1.length > set2.length) {
-        for (let i = 0; i < set1.length; i++){
-            if (set1[i] === set2[i]) {
-                m_set.push(set1[i])
-            }
-            else {
-                if (set2[i] !== undefined) {
-                    m_set.push(set2[i])
-                }
-                m_set.push(set1[i])
-            }
-        }
+  }
+};
+
+// a와 b교집합을 구한다
+const get_intersection = (str1, str2) => {
+  let intersection = [];
+  let a_map = new Map();
+  let b_map = new Map();
+  get_count(a_map, str1);
+  get_count(b_map, str2);
+
+  // a랑 b에 속해있어야하고 둘중에 작은값이 교집함
+  [...a_map].forEach((e) => {
+    const [alpha, a_cnt] = e;
+    if (b_map.has(alpha)) {
+      const b_cnt = b_map.get(alpha);
+      const loop = Math.min(b_cnt, a_cnt);
+      for (let i = 0; i < loop; i++) {
+        intersection.push(alpha);
+      }
     }
-    else {
-         for (let i = 0; i < set2.length; i++){
-            if (set1[i] === set2[i]) {
-                m_set.push(set1[i])
-            }
-            else {
-                if (set1[i] !== undefined) {
-                    m_set.push(set1[i])
-                }
-                m_set.push(set2[i])
-            }
-        }
+  });
+
+  return intersection;
+};
+
+// 합집합을구한다.
+const get_union = (str1, str2) => {
+  let union = [];
+  let a_map = new Map();
+  let b_map = new Map();
+  get_count(a_map, str1);
+  get_count(b_map, str2);
+
+  // a와 b둘다 존재하면 큰거의 개수를 넣어줌
+  [...a_map].forEach((e) => {
+    const [alpha, a_cnt] = e;
+    if (b_map.has(alpha)) {
+      const b_cnt = b_map.get(alpha);
+      const loop = Math.max(b_cnt, a_cnt);
+      for (let i = 0; i < loop; i++) {
+        union.push(alpha);
+      }
+    } else {
+      //b에없으면 그냥 a꺼만넣음
+      for (let i = 0; i < a_cnt; i++) {
+        union.push(alpha);
+      }
     }
-    return m_set
-}
-function MultiIntSet(set1, set2) {
-        let m_set=[]
-    if (set1.length > set2.length) {
-        for (let i = 0; i < set1.length; i++){
-            if (set1[i] === set2[i]) {
-                m_set.push(set1[i])
-            }
-        }
+  });
+  //a에 없는 나머지를 넣어준다.
+  [...b_map].forEach((e) => {
+    const [alpha, b_cnt] = e;
+    if (!a_map.has(alpha)) {
+      for (let i = 0; i < b_cnt; i++) {
+        union.push(alpha);
+      }
     }
-    else {
-         for (let i = 0; i < set2.length; i++){
-            if (set1[i] === set2[i]) {
-                m_set.push(set1[i])
-            }
-        }
-    }
-    return m_set
-    
-}
+  });
+
+  return union;
+};
+const jakade = (str1, str2) => {
+  let intersection = [];
+  let union = [];
+
+  intersection = get_intersection(str1, str2);
+  union = get_union(str1, str2);
+
+  let answer = (intersection.length / union.length) * 65536;
+  answer = Math.floor(answer);
+
+  return answer;
+};
 
 function solution(str1, str2) {
-    let answer = 0;
-    let str1Set;
-    let str2Set;
+  let answer = 0;
+  let listA = [];
+  let listB = [];
+  make_string(str1, listA);
+  make_string(str2, listB);
 
-    str1Set = divide(str1)
-    str2Set = divide(str2)
-    str1Set.sort()
-    str2Set.sort()
-    const a = MultiUnionSet(str1Set, str2Set)
-    const b = MultiIntSet(str1Set, str2Set)
-
-    let union = a.length 
-    let inter=b.length
-    if (union === 0 && inter === 0) {
-        return 65536
-    }
-
-    answer = inter/union
-   
-     answer *= 65536
-  
-    answer = Math.floor(answer)
-
-    return answer;
+  if (listA.length === 0 && listB.length === 0) {
+    return 65536;
+  }
+  answer = jakade(listA, listB);
+  return answer;
 }
-solution("handshake","shake hands")
+solution("FRANCE", "french");
+solution("handshake", "shake hands");
+solution("aa1+aa2", "AAAA12");
+solution("E=M*C^2", "e=m*c^2");
