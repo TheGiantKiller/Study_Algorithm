@@ -1,54 +1,52 @@
-const convert = (s, len) => {
-    let tmp = []
-    let newString=""
-    let idx = 0
-
-    //  len 길이 만큼 문자열을 잘라서 배열에 넣음 
-    while (idx < s.length) {
-        let tmpString = s.substr(idx, len)
-        tmp.push(tmpString)
-        idx+=len
-    }
-
-    // 배열에 있는 값으로 문자열을 압축시킴 
-    let cnt = 1
-    for (let i = 1; i < tmp.length; i++){
-        if (tmp[i] === tmp[i - 1]) {
-            cnt+=1    
+// len 단위로 문자열 압축 자른다.
+const zip=(s,len)=>{
+    let prev=s.substring(0,len)
+    let end=0+len
+    if(end>=s.length)return false
+    let tmp=[prev]
+    let zip_word=""
+    while(end<s.length){
+        let current=s.substring(end,end+len)
+        if(prev===current){
+            tmp.push(current)
         }
-        else {
-            if (cnt > 1) {
-                newString += String(cnt) + tmp[i - 1]
+        else{
+            if(tmp.length>1){
+                zip_word+=tmp.length.toString()+prev
             }
-            else {
-                newString+=tmp[i-1]    
+            else{
+                 zip_word+=prev
             }
-            cnt = 1
+            tmp=[current]
         }
+        prev=current
+        end+=len
     }
 
-    // 맨마지막 문자열 남는거 처리 
-    if (cnt > 1) {
-        newString+=String(cnt)+tmp[tmp.length-1]
+    if(tmp.length>1){
+        zip_word+=tmp.length.toString()+prev
     }
-    else {
-        newString+=tmp[tmp.length-1]
+    else{
+        zip_word+=prev
     }
-    return newString.length
+    return zip_word
 
-    
+
 }
+
 function solution(s) {
-    let answer = Infinity
-    let len = s.length
-    if (len === 1) {
-        return 1
-    }
+    let answer = Infinity;
+    if(s.length===1) return 1
+  
+    for(let i=0;i<s.length;i++){
+        let zip_word=zip(s,i+1)
+        if(zip_word){
+            answer=Math.min(zip_word.length,answer)
+        }
 
-    for (let i = 1; i <len; i++){
-        let cnt = convert(s, i)
-        answer=Math.min(cnt,answer)
     }
-
+    
     return answer;
 }
+
+solution("a")
