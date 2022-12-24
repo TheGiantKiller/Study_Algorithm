@@ -1,116 +1,90 @@
-// 다시풀어바야할듯.. 문제를 잘이해고 풀자
+// 핵심 솔루션 map으로 집합을 센다
 
-// string에대해 카운팅함
-const get_count = (map, str) => {
-  for (let i = 0; i < str.length; i++) {
-    let s = str[i];
-    if (!map.has(s)) {
-      map.set(s, 1);
-    } else {
-      map.set(s, map.get(s) + 1);
+// 1. 두글자 씩 끊어서 다중 집합을 만듬 (영문자로 된 글자쌍만 유효)
+// 2. 대소문자 차이 무시
+const isValid=(word)=>{
+  if(word.charCodeAt(0)>=65 && word.charCodeAt(0)<=90){
+    return true
+  }
+  return false
+}
+const make_word_set=(word)=>{
+  let newWord=[]
+  for(let i=0;i<word.length-1;i++){
+    const [a,b]=[word[i].toUpperCase(),word[i+1].toUpperCase()]
+    if(isValid(a) && isValid(b)){
+      newWord.push(a+b)
     }
   }
-};
+  return newWord 
+}
 
-// 문자열 처리
-const make_string = (str, list) => {
-  let new_string = str.toUpperCase();
-  for (let i = 0; i < new_string.length - 1; i++) {
-    let a = new_string.charCodeAt(i);
-    let b = new_string.charCodeAt(i + 1);
+const make_answer=(str1,str2)=>{
+  let union=0
+  let new_str1=[...str1]
+  let new_str2=[...str2]
+  let intersection=0
+  // union
+  // str1 이랑 str2 둘다 같은 알파벳이면 둘중 큰거를 넣음 
+  // str1 이랑 str2 둘다 다른 알파벳이면 둘다넣음
 
-    if (a >= 65 && a <= 90 && b >= 65 && b <= 90) {
-      list.push(new_string[i] + new_string[i + 1]);
+  new_str1.forEach(e => {
+    const [alpha,cnt]=e    
+    if(str2.has(alpha)){
+      union+=Math.max(str2.get(alpha),cnt)
+    }
+    else{
+      union+=cnt
+    }
+  }) 
+  //str2 남은거넣기
+  new_str2.forEach(e => {
+    const [alpha,cnt]=e    
+    if(!str1.has(alpha)){
+      union+=cnt
+    }
+  })
+
+
+  // intersection
+  //str1===str2 만 넣는다
+  new_str2.forEach(e => {
+    const [alpha,cnt]=e    
+    if(str1.has(alpha)){
+      intersection+=Math.min(str1.get(alpha),cnt)
+    }
+  });
+
+  let answer=intersection/union
+  answer*=65536
+  answer=Math.floor(answer)
+  return answer
+}
+const count_map=(word,map)=>{
+  for(let i=0;i<word.length;i++){
+    if(map.has(word[i])){
+      map.set(word[i],map.get(word[i])+1)
+    }
+    else{
+      map.set(word[i],1)
     }
   }
-};
-
-// a와 b교집합을 구한다
-const get_intersection = (str1, str2) => {
-  let intersection = [];
-  let a_map = new Map();
-  let b_map = new Map();
-  get_count(a_map, str1);
-  get_count(b_map, str2);
-
-  // a랑 b에 속해있어야하고 둘중에 작은값이 교집함
-  [...a_map].forEach((e) => {
-    const [alpha, a_cnt] = e;
-    if (b_map.has(alpha)) {
-      const b_cnt = b_map.get(alpha);
-      const loop = Math.min(b_cnt, a_cnt);
-      for (let i = 0; i < loop; i++) {
-        intersection.push(alpha);
-      }
-    }
-  });
-
-  return intersection;
-};
-
-// 합집합을구한다.
-const get_union = (str1, str2) => {
-  let union = [];
-  let a_map = new Map();
-  let b_map = new Map();
-  get_count(a_map, str1);
-  get_count(b_map, str2);
-
-  // a와 b둘다 존재하면 큰거의 개수를 넣어줌
-  [...a_map].forEach((e) => {
-    const [alpha, a_cnt] = e;
-    if (b_map.has(alpha)) {
-      const b_cnt = b_map.get(alpha);
-      const loop = Math.max(b_cnt, a_cnt);
-      for (let i = 0; i < loop; i++) {
-        union.push(alpha);
-      }
-    } else {
-      //b에없으면 그냥 a꺼만넣음
-      for (let i = 0; i < a_cnt; i++) {
-        union.push(alpha);
-      }
-    }
-  });
-  //a에 없는 나머지를 넣어준다.
-  [...b_map].forEach((e) => {
-    const [alpha, b_cnt] = e;
-    if (!a_map.has(alpha)) {
-      for (let i = 0; i < b_cnt; i++) {
-        union.push(alpha);
-      }
-    }
-  });
-
-  return union;
-};
-const jakade = (str1, str2) => {
-  let intersection = [];
-  let union = [];
-
-  intersection = get_intersection(str1, str2);
-  union = get_union(str1, str2);
-
-  let answer = (intersection.length / union.length) * 65536;
-  answer = Math.floor(answer);
-
-  return answer;
-};
+}
 
 function solution(str1, str2) {
-  let answer = 0;
-  let listA = [];
-  let listB = [];
-  make_string(str1, listA);
-  make_string(str2, listB);
+  var answer = 0;
+  
+  str1=make_word_set(str1)
+  str2=make_word_set(str2)
 
-  if (listA.length === 0 && listB.length === 0) {
-    return 65536;
+  let str1_count=new Map()
+  let str2_count=new Map()
+  count_map(str1,str1_count)
+  count_map(str2,str2_count)
+  if(str1_count.size===0 && str2_count.size===0){
+    return 65536
   }
-  answer = jakade(listA, listB);
+  answer=make_answer(str1_count,str2_count)
+
   return answer;
 }
-solution("FRANCE", "french");
-solution("handshake", "shake hands");
-solution("aa1+aa2", "AAAA12");
-solution("E=M*C^2", "e=m*c^2");
